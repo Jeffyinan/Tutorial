@@ -58,6 +58,9 @@ export API_KEY=sk-xxx
 export BASE_URL=https://api.siliconflow.cn/v1
 export MODEL_NAME=internlm/internlm2_5-7b-chat
 
+pip install phidata
+pip install python-dotenv
+
 python3 book_writer.py
 ```
 
