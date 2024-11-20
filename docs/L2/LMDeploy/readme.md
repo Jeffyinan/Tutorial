@@ -31,6 +31,8 @@ conda create -n lmdeploy  python=3.10 -y
 conda activate lmdeploy
 conda install pytorch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 pytorch-cuda=12.1 -c pytorch -c nvidia -y
 pip install timm==1.0.8 openai==1.40.3 lmdeploy[all]==0.5.3
+
+pip install datasets==2.19.2
 ```
 
 ## 1.2 InternStudio环境获取模型
@@ -346,6 +348,10 @@ lmdeploy lite auto_awq \
 等终端输出如下时，说明正在推理中，稍待片刻。
 
 ![img](https://raw.githubusercontent.com/BigWhiteFox/pictures/main/23.png)
+
+如果此处出现报错：TypeError: 'NoneType' object is not callable，原因是 当前版本的
+datasets3.0 无法下载calibrate数据集
+在命令前加一行 pip install datasets==2.19.2 可以解决
 
 等待推理完成，便可以直接在你设置的目标文件夹看到对应的模型文件。
 
