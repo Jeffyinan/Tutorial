@@ -27,6 +27,8 @@ cd BookAI
 #### 2.2 配置项目 Python 环境
 ```
 pip install -r requirements.txt
+pip install phidata
+pip install python-dotenv
 ```
 
 #### 2.3 配置大模型 API
@@ -42,8 +44,6 @@ export API_KEY=xxx
 export BASE_URL=https://internlm-chat.intern-ai.org.cn/puyu/api/v1/
 export MODEL_NAME=internlm2.5-latest
 
-pip install phidata
-pip install python-dotenv
 
 python3 book_writer.py
 ```
@@ -61,8 +61,6 @@ export API_KEY=sk-xxx
 export BASE_URL=https://api.siliconflow.cn/v1
 export MODEL_NAME=internlm/internlm2_5-7b-chat
 
-pip install phidata
-pip install python-dotenv
 
 python3 book_writer.py
 ```
