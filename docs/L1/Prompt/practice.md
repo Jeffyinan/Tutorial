@@ -27,6 +27,8 @@ cd BookAI
 #### 2.2 配置项目 Python 环境
 ```
 pip install -r requirements.txt
+pip install phidata
+pip install python-dotenv
 ```
 
 #### 2.3 配置大模型 API
