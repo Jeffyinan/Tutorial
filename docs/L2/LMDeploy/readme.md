@@ -305,7 +305,9 @@ lmdeploy serve api_server \
 
 让我们回到LMDeploy，在最新的版本中，LMDeploy使用的是AWQ算法，能够实现模型的4bit权重量化。输入以下指令，执行量化工作。**(不建议运行，在InternStudio上运行需要8小时)**
 
+```
 pip install datasets==2.19.2 
+```
 
 ```Python
 lmdeploy lite auto_awq \
