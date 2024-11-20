@@ -295,6 +295,15 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.legacy.callbacks import CallbackManager
 from llama_index.llms.openai_like import OpenAILike
 
+#Streamlit (st): 提供前端 Web 界面。
+#LlamaIndex: 文档索引和查询引擎。
+#VectorStoreIndex: 存储文档向量并构建索引。
+#SimpleDirectoryReader: 从指定文件夹加载文档。
+#Settings: 配置 LlamaIndex 的全局设置。
+#HuggingFaceEmbedding: 使用 Hugging Face 嵌入模型进行文本向量化。
+#OpenAILike: 自定义语言模型的封装。
+#CallbackManager: 用于处理回调，跟踪模型的运行状态。
+
 # Create an instance of CallbackManager
 callback_manager = CallbackManager()
 
@@ -307,33 +316,40 @@ api_key = "请填写 API Key"
 # api_key = "请填写 API Key"
 
 llm =OpenAILike(model=model, api_base=api_base_url, api_key=api_key, is_chat_model=True,callback_manager=callback_manager)
+# 使用 OpenAILike 封装 InternLM，模拟 OpenAI 的 API 行为。
+# 配置模型的基础 URL、API Key、模型名称和回调管理器。
+# is_chat_model=True: 指定为对话模型。
 
 
-
+# 设置Streamlit页面标题和图标
 st.set_page_config(page_title="llama_index_demo", page_icon="🦜🔗")
 st.title("llama_index_demo")
 
-# 初始化模型
-@st.cache_resource
+# 初始化模型 全局 Settings，将嵌入模型和语言模型绑定到 LlamaIndex。
+@st.cache_resource # 使用 @st.cache_resource，避免重复加载资源，提高性能。
 def init_models():
     embed_model = HuggingFaceEmbedding(
         model_name="/root/model/sentence-transformer"
     )
-    Settings.embed_model = embed_model
+    Settings.embed_model = embed_model # 设置嵌入模型
 
     #用初始化llm
-    Settings.llm = llm
+    Settings.llm = llm # 设置语言模型
 
-    documents = SimpleDirectoryReader("/root/llamaindex_demo/data").load_data()
-    index = VectorStoreIndex.from_documents(documents)
-    query_engine = index.as_query_engine()
+# 使用 SimpleDirectoryReader 从指定路径加载文档。
+    documents = SimpleDirectoryReader("/root/llamaindex_demo/data").load_data() 
+    index = VectorStoreIndex.from_documents(documents) # 构建文档索引 (VectorStoreIndex) 并转化为查询引擎。
+    query_engine = index.as_query_engine()  # 初始化查询引擎
 
     return query_engine
 
-# 检查是否需要初始化模型
+# 检查是否需要初始化模型 通过st.session_state检查并存储query_engine，确保跨会话持久化。
+# 检查 query_engine 是否已存在于会话状态中。
+# 如果不存在，调用 init_models() 初始化模型并存储到 st.session_state
 if 'query_engine' not in st.session_state:
     st.session_state['query_engine'] = init_models()
 
+# 使用 query_engine 查询用户输入的问题，返回生成的答案。
 def greet2(question):
     response = st.session_state['query_engine'].query(question)
     return response
@@ -341,6 +357,7 @@ def greet2(question):
       
 # Store LLM generated responses
 if "messages" not in st.session_state.keys():
+    # 初始化聊天记录，默认由助手发送欢迎消息。
     st.session_state.messages = [{"role": "assistant", "content": "你好，我是你的助手，有什么我可以帮助你的吗？"}]    
 
     # Display or clear chat messages
@@ -348,12 +365,15 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
+# 重置 messages，只保留默认的欢迎消息
 def clear_chat_history():
     st.session_state.messages = [{"role": "assistant", "content": "你好，我是你的助手，有什么我可以帮助你的吗？"}]
 
+# 提供一个侧边栏按钮，允许用户清空当前会话历史记录。
 st.sidebar.button('Clear Chat History', on_click=clear_chat_history)
 
 # Function for generating LLaMA2 response
+# 调用 generate_llama_index_response，将用户输入传递给 greet2 查询引擎
 def generate_llama_index_response(prompt_input):
     return greet2(prompt_input)
 
@@ -364,13 +384,23 @@ if prompt := st.chat_input():
         st.write(prompt)
 
 # Gegenerate_llama_index_response last message is not from assistant
+# 检查最后一条消息角色
+# 目的：检查会话记录的最后一条消息是否来自助手。
+# 原因：避免重复生成响应。例如，用户没有输入新问题时，不再触发回答生成。(role 为 "assistant")。
 if st.session_state.messages[-1]["role"] != "assistant":
+    # 表示接下来生成的内容将显示为助手的消息。
     with st.chat_message("assistant"):
+        # 在助手生成回答期间显示一个加载动画，让用户直观感受到系统在“思考”。
         with st.spinner("Thinking..."):
+            # 调用 generate_llama_index_response，将用户输入的问题传递给查询引擎。生成回答并将其存储在变量 response 中。
             response = generate_llama_index_response(prompt)
+            # 在页面中预留一个位置用于显示回答。
             placeholder = st.empty()
+            # 用 Markdown 格式将助手的回答内容 (response) 渲染在页面上。支持多种格式（如换行、加粗等），提升显示效果。
             placeholder.markdown(response)
+    # 更新会话记录
     message = {"role": "assistant", "content": response}
+    # 将新的助手消息添加到会话历史中。 st.session_state.messages 是存储所有消息的会话状态变量。
     st.session_state.messages.append(message)
 ```
 
