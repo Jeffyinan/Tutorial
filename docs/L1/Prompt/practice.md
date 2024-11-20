@@ -42,6 +42,9 @@ export API_KEY=xxx
 export BASE_URL=https://internlm-chat.intern-ai.org.cn/puyu/api/v1/
 export MODEL_NAME=internlm2.5-latest
 
+pip install phidata
+pip install python-dotenv
+
 python3 book_writer.py
 ```
 （3）创作好的书籍在 books 文件夹下，写好的书籍示例（仅供参考）： [爱的编码：解密人类情感基因](./book.md).
